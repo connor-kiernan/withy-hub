@@ -1,25 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import {Route, Routes} from "react-router-dom";
+import Availability from "./views/Availability";
+import NotFound from "./views/NotFound";
+import Profile from "./views/Profile";
+import Layout from "./components/Layout";
+import RequireAuth from "./features/auth/RequireAuth";
+import PersistLogin from "./components/PersistLogin";
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <>
+        <Routes>
+          <Route path="/">
+            <Route element={<PersistLogin/>}>
+              <Route element={<RequireAuth/>}>
+                <Route element={<Layout/>}>
+                  <Route index element={<Availability/>}/>
+                  <Route path="availability" element={<Availability/>}/>
+                  <Route path="profile" element={<Profile/>}/>
+                  <Route path="*" element={<NotFound/>}/>
+                </Route>
+              </Route>
+            </Route>
+          </Route>
+        </Routes>
+
+      </>
   );
-}
+};
 
 export default App;
