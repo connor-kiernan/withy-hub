@@ -1,31 +1,36 @@
 import "./App.css";
-import {Route, Routes} from "react-router-dom";
+import {Navigate, Route, Routes} from "react-router-dom";
 import Availability from "./views/Availability";
 import NotFound from "./views/NotFound";
 import Profile from "./views/Profile";
 import Layout from "./components/Layout";
 import RequireAuth from "./features/auth/RequireAuth";
 import PersistLogin from "./components/PersistLogin";
+import StripSearch from "./components/StripSearch";
+import MatchAvailability from "./components/availability/MatchAvailability";
 
 const App = () => {
   return (
-      <>
-        <Routes>
-          <Route path="/">
-            <Route element={<PersistLogin/>}>
-              <Route element={<RequireAuth/>}>
+      <Routes>
+        <Route path="/">
+          <Route element={<PersistLogin/>}>
+            <Route element={<RequireAuth/>}>
+              <Route element={<StripSearch/>}>
                 <Route element={<Layout/>}>
-                  <Route index element={<Availability/>}/>
-                  <Route path="availability" element={<Availability/>}/>
+                  <Route index element={<Navigate to="/availability"/>}/>
+                  <Route path="/" element={<Navigate to="/availability"/>}/>
+                  <Route path="availability">
+                    <Route index element={<Availability/>} />
+                    <Route path=":fixtureId" element={<MatchAvailability />} />
+                  </Route>
                   <Route path="profile" element={<Profile/>}/>
                   <Route path="*" element={<NotFound/>}/>
                 </Route>
               </Route>
             </Route>
           </Route>
-        </Routes>
-
-      </>
+        </Route>
+      </Routes>
   );
 };
 

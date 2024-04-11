@@ -1,13 +1,15 @@
 import {useSelector} from "react-redux";
 import {selectCurrentToken} from "./authSlice";
-import {Outlet, useSearchParams} from "react-router-dom";
+import {Outlet, useLocation} from "react-router-dom";
 import {useEffect, useRef} from "react";
 import Login from "./Login";
 
 const RequireAuth = () => {
   const token = useSelector(selectCurrentToken);
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const effectRan = useRef(false);
+
+  const queryParams = new URLSearchParams(location.search);
 
   useEffect(() => {
     if (effectRan.current === true || process.env.REACT_APP_ENVIRONMENT !== "development") {
@@ -15,7 +17,7 @@ const RequireAuth = () => {
        window.location.replace(loginUrl());
       }
 
-      if (!token && !searchParams.has("code")) redirect();
+      if (!token && !queryParams.has("code")) redirect();
     }
 
     return () => effectRan.current = true;
@@ -26,8 +28,8 @@ const RequireAuth = () => {
     return (<Outlet/>);
   }
 
-  if (searchParams.has("code")) {
-    return (<Login authCode={searchParams.get("code")} redirectUri={window.location.href.split("?")[0]}/>);
+  if (queryParams.has("code")) {
+    return (<Login authCode={queryParams.get("code")} redirectUri={window.location.href.split("?")[0]}/>);
   }
 };
 

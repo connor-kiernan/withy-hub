@@ -1,5 +1,5 @@
 import {setCredentials} from "./authSlice";
-import {Navigate} from "react-router-dom";
+import {Outlet} from "react-router-dom";
 import {useLoginMutation} from "./authApiSlice";
 import {useEffect, useRef, useState} from "react";
 import {useDispatch} from "react-redux";
@@ -40,8 +40,7 @@ const Login = ({authCode, redirectUri}) => {
   }
 
   if (isSuccess && trueSuccess) {
-
-    return (<Navigate to={window.location.pathname}/>);
+    return (<Outlet />);
   }
 
   return (<p>Error</p>)
