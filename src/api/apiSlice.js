@@ -1,5 +1,5 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
-import {logOut, setCredentials} from "../../features/auth/authSlice";
+import {logOut, setCredentials} from "../features/auth/authSlice";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.REACT_APP_HAPI_URL,
@@ -34,5 +34,6 @@ const baseQueryWithReAuth = async (args, api, extraOptions) => {
 
 export const apiSlice = createApi({
   baseQuery: baseQueryWithReAuth,
-  endpoints: builder => ({})
+  endpoints: () => ({}),
+  tagTypes: ["Match"]
 })
