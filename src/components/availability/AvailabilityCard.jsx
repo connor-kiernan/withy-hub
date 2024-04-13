@@ -1,28 +1,33 @@
 import React from "react";
 import {Card, Col, Row} from "react-bootstrap";
-import Date from "../Date";
+import FormattedDate from "../FormattedDate";
 import {Link} from "react-router-dom";
+
+export function resolveAvailabilityTextClass(status) {
+  let textClass = "bg-";
+  switch (status) {
+    case "AVAILABLE":
+      textClass += "success";
+      break;
+    case "UNAVAILABLE":
+      textClass += "danger";
+      break;
+    case "IF_DESPERATE":
+      textClass += "warning";
+      break;
+    case "FAN_CLUB":
+      textClass += "primary";
+      break;
+    default:
+      textClass += "secondary";
+  }
+  return textClass;
+}
 
 function resolveFooter(availability) {
   if (availability) {
     const comment = availability.comment ? ` (${availability.comment})` : "";
-    let textClass = "text-bg-";
-    switch (availability.status) {
-      case "AVAILABLE":
-        textClass += "success";
-        break;
-      case "UNAVAILABLE":
-        textClass += "danger";
-        break;
-      case "IF_DESPERATE":
-        textClass += "warning";
-        break;
-      case "FAN_CLUB":
-        textClass += "primary";
-        break;
-      default:
-        textClass += "";
-    }
+    let textClass = "text-" + resolveAvailabilityTextClass(availability.status);
     const footer = `${availability.status.toLowerCase().replace("_", " ")}${comment}`;
     return ({footer, textClass});
   }
@@ -41,7 +46,7 @@ const AvailabilityCard = ({fixture, availability}) => {
       <Card className="text-center">
         <Card.Body>
           <Card.Title className="text-captialize mb-3">{opponent}</Card.Title>
-          <Card.Subtitle><Date date={kickOffDateTime} withTime={true}/></Card.Subtitle>
+          <Card.Subtitle><FormattedDate instant={kickOffDateTime} withTime={true}/></Card.Subtitle>
           <Card.Text className="text-secondary small mt-2">{addressLine}</Card.Text>
         </Card.Body>
         <Card.Footer className={`${textClass} text-capitalize`}>

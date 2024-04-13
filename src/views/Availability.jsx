@@ -1,12 +1,12 @@
-import AvailabilityContainer from "../components/availability/AvailabilityContainer";
-import "./availability.css"
+import "./availability.css";
+import AvailabilityList from "../components/availability/AvailabilityList";
 
 const Availability = () => {
 
   return (
       <>
         <h1 className="h3 text-center">My Availability</h1>
-        <AvailabilityContainer />
+        <AvailabilityList />
       </>
   );
 };

@@ -1,0 +1,23 @@
+.accordion-button:not(.collapsed) {
+  color: inherit;
+  background-color: inherit;
+}
+
+.accordion-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+select.form-select:focus {
+  box-shadow: none;
+}
+
+.mb-6 {
+  margin-bottom: 4rem;
+}
+
+.form-control.no-validate:valid {
+  border-color: #ced4da;
+  padding-right: .75rem;
+  background: none;
+}

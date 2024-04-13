@@ -1,11 +1,13 @@
 import React from "react";
 import {useSelector} from "react-redux";
-import {selectAvailabilityByUsername} from "../../features/matches/matchSlice";
+import {selectAvailabilityByUserSub} from "../../features/matches/matchSlice";
 import {Col, Row} from "react-bootstrap";
 import AvailabilityCard from "./AvailabilityCard";
+import {selectCurrentUser} from "../../features/auth/authSlice";
 
 const AvailabilityList = () => {
-  const availabilities = useSelector(selectAvailabilityByUsername("connor.kiernan"))
+  const currentUser = useSelector(selectCurrentUser);
+  const availabilities = useSelector(selectAvailabilityByUserSub(currentUser));
 
   return (
       <Row xs={1} md={2} className="gy-3 pb-2">

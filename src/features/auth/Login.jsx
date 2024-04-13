@@ -18,8 +18,8 @@ const Login = ({authCode, redirectUri}) => {
     if (effectRan.current === true || process.env.REACT_APP_ENVIRONMENT !== "development") {
       const exchangeCode = async () => {
         try {
-          const {accessToken} = await login({authCode, redirectUri}).unwrap();
-          dispatch(setCredentials(accessToken))
+          const authResponse = await login({authCode, redirectUri}).unwrap();
+          dispatch(setCredentials({...authResponse}))
 
           setTrueSuccess(true);
         } catch (err) {
