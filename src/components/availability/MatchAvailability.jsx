@@ -9,6 +9,11 @@ import Kit from "./Kit";
 import "./MatchAvailability.css";
 import {SoccerFootballField} from "@vectopus/atlas-icons-react";
 import AvailabilityForm from "./AvailabilityForm";
+import MatchAvailabilityTable from "./MatchAvailabilityTable";
+import {store} from "../../app/store";
+import {playerApiSlice} from "../../features/players/playerSlice";
+
+store.dispatch(playerApiSlice.endpoints.getPlayers.initiate());
 
 const MatchAvailability = () => {
   const {fixtureId} = useParams();
@@ -64,6 +69,11 @@ const MatchAvailability = () => {
                 </Accordion.Body>
               </Accordion.Item>
             </Accordion>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12}>
+            <MatchAvailabilityTable playerAvailability={playerAvailability} />
           </Col>
         </Row>
       </>

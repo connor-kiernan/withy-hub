@@ -3,42 +3,36 @@ import {Card, Col, Row} from "react-bootstrap";
 import FormattedDate from "../FormattedDate";
 import {Link} from "react-router-dom";
 
-export function resolveAvailabilityTextClass(status) {
-  let textClass = "bg-";
+export function resolveAvailabilityVariant(status) {
   switch (status) {
     case "AVAILABLE":
-      textClass += "success";
-      break;
+      return "success";
     case "UNAVAILABLE":
-      textClass += "danger";
-      break;
+      return "danger";
     case "IF_DESPERATE":
-      textClass += "warning";
-      break;
+      return "warning";
     case "FAN_CLUB":
-      textClass += "primary";
-      break;
+      return "primary";
     default:
-      textClass += "secondary";
+      return "secondary";
   }
-  return textClass;
 }
 
-function resolveFooter(availability) {
+export function normaliseAvailability(availability) {
   if (availability) {
     const comment = availability.comment ? ` (${availability.comment})` : "";
-    let textClass = "text-" + resolveAvailabilityTextClass(availability.status);
-    const footer = `${availability.status.toLowerCase().replace("_", " ")}${comment}`;
-    return ({footer, textClass});
+    let variant = resolveAvailabilityVariant(availability.status);
+    const text = `${availability.status.toLowerCase().replace("_", " ")}${comment}`;
+    return ({text, variant});
   }
 
-  return ({footer: "Not set", textClass: "text-bg-secondary"});
+  return ({text: "Not set", variant: "secondary"});
 }
 
 const AvailabilityCard = ({fixture, availability}) => {
   const {id, kickOffDateTime, address, isHomeGame, opponent} = fixture;
 
-  const {footer, textClass} = resolveFooter(availability);
+  const {text, variant} = normaliseAvailability(availability);
 
   const addressLine = <>{isHomeGame ? "Home" : "Away"} &#183; <span className="user-select-all">{address["line1"]}</span></>;
 
@@ -49,10 +43,10 @@ const AvailabilityCard = ({fixture, availability}) => {
           <Card.Subtitle><FormattedDate instant={kickOffDateTime} withTime={true}/></Card.Subtitle>
           <Card.Text className="text-secondary small mt-2">{addressLine}</Card.Text>
         </Card.Body>
-        <Card.Footer className={`${textClass} text-capitalize`}>
+        <Card.Footer className={`text-bg-${variant} text-capitalize`}>
           <Link to={id} className="text-reset text-decoration-none">
             <Row className="justify-content-center position-relative">
-              <Col>{footer}</Col>
+              <Col>{text}</Col>
               <Col xs={"auto"} className="position-absolute bottom-0 end-0">
                 <i className="fa-solid fa-arrow-right"></i>
               </Col>
