@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, CloseButton, Col, FloatingLabel, Form, InputGroup, Row, Spinner, Toast} from "react-bootstrap";
+import {Button, CloseButton, FloatingLabel, Form, InputGroup, Row, Spinner, Toast} from "react-bootstrap";
 import AnimateHeight from "react-animate-height";
 import {useSelector} from "react-redux";
 import {selectCurrentUser} from "../../features/auth/authSlice";
@@ -26,7 +26,7 @@ const AvailabilityForm = ({playerAvailability, matchId}) => {
   const [submitDisabled, setSubmitDisabled] = useState(true);
 
   useEffect(() => {
-    if (status !== confirmedAvailability.current || comment !== confirmedComment.current) {
+    if (status !== confirmedAvailability.current || comment.trim() !== confirmedComment.current) {
       setSubmitDisabled(false);
     } else {
       setSubmitDisabled(true);
@@ -67,7 +67,7 @@ const AvailabilityForm = ({playerAvailability, matchId}) => {
     if (form.checkValidity() !== false) {
       setValidated(false);
 
-      await updateAvailability({userSub, matchId, availability: {status, comment}});
+      await updateAvailability({userSub, matchId, availability: {status, comment: comment.trim()}});
     } else {
       setValidated(true);
     }
