@@ -8,6 +8,7 @@ import RequireAuth from "./features/auth/RequireAuth";
 import PersistLogin from "./components/PersistLogin";
 import StripSearch from "./components/StripSearch";
 import MatchAvailability from "./components/availability/MatchAvailability";
+import AvailabilityContainer from "./components/availability/AvailabilityContainer";
 
 const App = () => {
   return (
@@ -19,7 +20,7 @@ const App = () => {
                 <Route element={<Layout/>}>
                   <Route index element={<Navigate to="/availability"/>}/>
                   <Route path="/" element={<Navigate to="/availability"/>}/>
-                  <Route path="availability">
+                  <Route path="availability" element={<AvailabilityContainer />}>
                     <Route index element={<Availability/>} />
                     <Route path=":fixtureId" element={<MatchAvailability />} />
                   </Route>
