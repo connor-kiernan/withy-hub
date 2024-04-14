@@ -1,6 +1,7 @@
 name: Upload Website
 
 on:
+  workflow_dispatch:
   push:
     branches:
     - main
@@ -10,6 +11,7 @@ env:
   REACT_APP_ENVIRONMENT: "production"
   REACT_APP_COGNITO_CLIENT_ID: ${{ secrets.AWS_COGNITO_CLIENT_ID }}
   REACT_APP_COGNITO_URL: ${{ secrets.AWS_COGNITO_URL }}
+  REACT_APP_HOSTED_URL: ${{ secrets.HOSTED_URL }}
 
 jobs:
   install:
