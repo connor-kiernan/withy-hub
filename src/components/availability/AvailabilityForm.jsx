@@ -3,7 +3,7 @@ import {Button, CloseButton, FloatingLabel, Form, InputGroup, Row, Spinner, Toas
 import AnimateHeight from "react-animate-height";
 import {useSelector} from "react-redux";
 import {selectCurrentUser} from "../../features/auth/authSlice";
-import {resolveAvailabilityTextClass} from "./AvailabilityCard";
+import {resolveAvailabilityVariant} from "./AvailabilityCard";
 import {useUpdateAvailabilityMutation} from "../../features/matches/matchSlice";
 
 const AvailabilityForm = ({playerAvailability, matchId}) => {
@@ -11,8 +11,8 @@ const AvailabilityForm = ({playerAvailability, matchId}) => {
   const userAvailability = playerAvailability[userSub];
   const [status, setStatus] = useState(userAvailability?.status ?? "");
   const [comment, setComment] = useState(userAvailability?.comment ?? "");
-  const [textClass, setTextClass] = useState(userAvailability ? resolveAvailabilityTextClass(userAvailability.status) : "bg-secondary");
-  const [height, setHeight] = useState("auto");
+  const [textClass, setTextClass] = useState("bg-" + (userAvailability ? resolveAvailabilityVariant(userAvailability.status) : "secondary"));
+  const [height, setHeight] = useState(userAvailability?.status !== "FAN_CLUB" ? "auto" : 0);
   const [validated, setValidated] = useState(false);
   const [disabled, setDisabled] = useState(false);
 
@@ -31,14 +31,14 @@ const AvailabilityForm = ({playerAvailability, matchId}) => {
     } else {
       setSubmitDisabled(true);
     }
-    // eslint-disable-next-line
-  }, [status, comment, confirmedAvailability.current, confirmedComment.current]);
+  }, [status, comment]);
 
   useEffect(() => {
     if (isSuccess) {
       setShowSuccess(true);
       confirmedAvailability.current = status;
       confirmedComment.current = comment;
+      setSubmitDisabled(true);
     }
     // eslint-disable-next-line
   }, [isSuccess]);
@@ -52,7 +52,7 @@ const AvailabilityForm = ({playerAvailability, matchId}) => {
   function updateStatus(e) {
     const value = e.target.value;
     setStatus(value);
-    setTextClass(resolveAvailabilityTextClass(value));
+    setTextClass("bg-" + resolveAvailabilityVariant(value));
     setComment("");
 
     setHeight(value !== "FAN_CLUB" ? "auto" : 0);
