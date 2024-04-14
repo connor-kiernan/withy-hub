@@ -1,5 +1,5 @@
 import "./App.css";
-import {Navigate, Route, Routes} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import Availability from "./views/Availability";
 import NotFound from "./views/NotFound";
 import Profile from "./views/Profile";
@@ -9,6 +9,7 @@ import PersistLogin from "./components/PersistLogin";
 import StripSearch from "./components/StripSearch";
 import MatchAvailability from "./components/availability/MatchAvailability";
 import AvailabilityContainer from "./components/availability/AvailabilityContainer";
+import Index from "./views/Index";
 
 const App = () => {
   return (
@@ -18,8 +19,8 @@ const App = () => {
             <Route element={<RequireAuth/>}>
               <Route element={<StripSearch/>}>
                 <Route element={<Layout/>}>
-                  <Route index element={<Navigate to="/availability"/>}/>
-                  <Route path="/" element={<Navigate to="/availability"/>}/>
+                  <Route index element={<Index />}/>
+                  <Route path="/" element={<Index />}/>
                   <Route path="availability" element={<AvailabilityContainer />}>
                     <Route index element={<Availability/>} />
                     <Route path=":fixtureId" element={<MatchAvailability />} />
