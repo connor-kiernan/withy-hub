@@ -29,19 +29,19 @@ export function normaliseAvailability(availability) {
   return ({text: "Not set", variant: "secondary"});
 }
 
-const AvailabilityCard = ({fixture, availability}) => {
-  const {id, kickOffDateTime, address, isHomeGame, opponent} = fixture;
+const AvailabilityCard = ({event, availability}) => {
+  const {id, kickOffDateTime, address, isHomeGame, opponent, eventType} = event;
 
   const {text, variant} = normaliseAvailability(availability);
 
-  const addressLine = <>{isHomeGame ? "Home" : "Away"} &#183; <span className="user-select-all">{address["line1"]}</span></>;
+  const addressLine = <>{eventType ? eventType.toLowerCase() : isHomeGame ? "Home" : "Away"} &#183; <span className="user-select-all">{address["line1"]}</span></>;
 
   return (
       <Card className="text-center">
         <Card.Body>
           <Card.Title className="text-captialize mb-3">{opponent}</Card.Title>
           <Card.Subtitle><FormattedDate instant={kickOffDateTime} withTime={true}/></Card.Subtitle>
-          <Card.Text className="text-secondary small mt-2">{addressLine}</Card.Text>
+          <Card.Text className="text-secondary text-capitalize small mt-2">{addressLine}</Card.Text>
         </Card.Body>
         <Card.Footer className={`text-bg-${variant} text-capitalize`}>
           <Link to={id} className="text-reset text-decoration-none">

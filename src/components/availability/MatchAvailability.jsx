@@ -1,6 +1,6 @@
 import React from "react";
 import {useSelector} from "react-redux";
-import {selectFixtureById} from "../../features/matches/matchSlice";
+import {selectEventById} from "../../features/matches/matchSlice";
 import {Accordion, Col, ListGroup, Row} from "react-bootstrap";
 import {useParams} from "react-router-dom";
 import FormattedDate from "../FormattedDate";
@@ -17,8 +17,8 @@ store.dispatch(playerApiSlice.endpoints.getPlayers.initiate());
 
 const MatchAvailability = () => {
   const {fixtureId} = useParams();
-  const fixture = useSelector(selectFixtureById(fixtureId));
-  const {opponent, kickOffDateTime, address, isHomeKit, pitchType, playerAvailability} = fixture;
+  const fixture = useSelector(selectEventById(fixtureId));
+  const {opponent, kickOffDateTime, address, isHomeKit, pitchType, playerAvailability, eventType} = fixture;
 
   return (
       <>
@@ -40,15 +40,15 @@ const MatchAvailability = () => {
                         </Col>
                       </Row>
                     </ListGroup.Item>
-                    <ListGroup.Item><Kit isHomeKit={isHomeKit}/></ListGroup.Item>
-                    <ListGroup.Item>
+                    {eventType !== "TRAINING" && <ListGroup.Item><Kit isHomeKit={isHomeKit}/></ListGroup.Item>}
+                    {((eventType !== "TRAINING") || (eventType !== "GAME")) && <ListGroup.Item>
                       <Row className="align-items-center">
                         <Col xs={2} className="text-center">
                           <SoccerFootballField/>
                         </Col>
                         <Col>{pitchType ?? "Unknown"}</Col>
                       </Row>
-                    </ListGroup.Item>
+                    </ListGroup.Item>}
                     <ListGroup.Item>
                       <Row>
                         <Col xs={2} className="text-center">
@@ -65,7 +65,7 @@ const MatchAvailability = () => {
               <Accordion.Item eventKey="1">
                 <Accordion.Header>Availability</Accordion.Header>
                 <Accordion.Body>
-                  <AvailabilityForm playerAvailability={playerAvailability} matchId={fixtureId}/>
+                  <AvailabilityForm playerAvailability={playerAvailability} matchId={fixtureId} isGame={eventType === "GAME"}/>
                 </Accordion.Body>
               </Accordion.Item>
             </Accordion>
