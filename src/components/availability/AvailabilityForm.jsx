@@ -6,7 +6,7 @@ import {selectCurrentUser} from "../../features/auth/authSlice";
 import {resolveAvailabilityVariant} from "./AvailabilityCard";
 import {useUpdateAvailabilityMutation} from "../../features/matches/matchSlice";
 
-const AvailabilityForm = ({playerAvailability, matchId}) => {
+const AvailabilityForm = ({playerAvailability, matchId, isGame}) => {
   const userSub = useSelector(selectCurrentUser);
   const userAvailability = playerAvailability[userSub];
   const [status, setStatus] = useState(userAvailability?.status ?? "");
@@ -88,7 +88,7 @@ const AvailabilityForm = ({playerAvailability, matchId}) => {
                     <option value="AVAILABLE">Available</option>
                     <option value="IF_DESPERATE">If desperate</option>
                     <option value="UNAVAILABLE">Unavailable</option>
-                    <option value="FAN_CLUB">Fan club</option>
+                    {isGame && <option value="FAN_CLUB">Fan club</option>}
                   </Form.Select>
                   <InputGroup.Text className={textClass}>
                   </InputGroup.Text>

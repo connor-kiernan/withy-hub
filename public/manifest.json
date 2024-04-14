@@ -1,6 +1,7 @@
 {
   "name": "Withy Hub",
   "short_name": "Withy Hub",
+  "description": "Management app for Withington Hope CF",
   "icons": [
     {
       "src": "/images/android-chrome-192x192.png",
@@ -26,5 +27,6 @@
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#1a61ad",
-  "background_color": "#1a61ad"
+  "background_color": "#1a61ad",
+  "categories": ["sports", "utilities"]
 }

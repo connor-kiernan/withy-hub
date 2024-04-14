@@ -2,7 +2,7 @@ import {createEntityAdapter, createSelector} from "@reduxjs/toolkit";
 import {apiSlice} from "../../api/apiSlice";
 
 const matchesAdapter = createEntityAdapter({
-  sortComparer: (a, b) => a["kickOffDateTime"] - b["kickOffDateTime"]
+  sortComparer: (a, b) => Date.parse(a["kickOffDateTime"]) - Date.parse(b["kickOffDateTime"])
 });
 
 const initialState = matchesAdapter.getInitialState({});
@@ -41,7 +41,7 @@ export const {
 
 export const selectMatchesResult = matchesApiSlice.endpoints.getMatches.select();
 
-const selectMatchesData = createSelector(
+const selectEventsData = createSelector(
     selectMatchesResult,
     matchesResult => {
       return matchesResult.data;
@@ -49,26 +49,26 @@ const selectMatchesData = createSelector(
 );
 
 export const {
-  selectAll: selectAllMatches
-} = matchesAdapter.getSelectors(state => selectMatchesData(state) ?? initialState);
+  selectAll: selectAllEvents
+} = matchesAdapter.getSelectors(state => selectEventsData(state) ?? initialState);
 
 export const selectResults = createSelector(
-    selectAllMatches,
+    selectAllEvents,
     matches => {
-      return matches.filter(match => match["played"]);
+      return matches.filter(match => match["played"] ?? match["kickOffDateTime"] > new Date() / 1000);
     }
 );
 
-export const selectFixtures = createSelector(
-    selectAllMatches,
+export const selectFutureEvents = createSelector(
+    selectAllEvents,
     matches => {
       return matches.filter(match => !match["played"]);
     }
 );
 
-export const selectNextFixture = createSelector(
-    selectFixtures,
-    fixtures => fixtures[0]
+export const selectNextEvent = createSelector(
+    selectFutureEvents,
+    events => events[0]
 );
 
 export const selectLastResult = createSelector(
@@ -76,33 +76,13 @@ export const selectLastResult = createSelector(
     results => results[results.length - 1]
 );
 
-export const selectFixtureById = (fixtureId) => createSelector(
-    selectFixtures,
-    fixtures => fixtures.find(fixture => fixture.id === fixtureId)
+export const selectEventById = (eventId) => createSelector(
+    selectFutureEvents,
+    events => events.find(event => event.id === eventId)
 )
 
 export const selectAvailabilityByUserSub = (userSub) => createSelector(
-    selectFixtures,
-    fixtures => fixtures.map(({id, kickOffDateTime, address, isHomeGame, isHomeKit, opponent, playerAvailability}) =>
-        ({fixture: {id, kickOffDateTime, address, isHomeGame, opponent, isHomeKit}, availability: playerAvailability ? playerAvailability[userSub] : null}))
+    selectFutureEvents,
+    event => event.map(({id, kickOffDateTime, address, isHomeGame, isHomeKit, opponent, eventType, playerAvailability}) =>
+        ({event: {id, kickOffDateTime, address, isHomeGame, opponent, isHomeKit, eventType}, availability: playerAvailability ? playerAvailability[userSub] : null}))
 )
-
-export const selectFixturesGroupedByMonth = createSelector(
-    selectFixtures,
-    fixtures => groupByMonth(fixtures)
-);
-
-export const selectResultsGroupedByMonth = createSelector(
-    selectResults,
-    results => groupByMonth(results)
-);
-
-function groupByMonth(matches) {
-  return matches.reduce((group, result) => {
-    const month = result["kickOffDateTime"].toLocaleDateString("en-GB", {month: "long"});
-    (group[month] = group[month] || []).push(result);
-
-    return group;
-  }, {});
-}
-
