@@ -1,8 +1,5 @@
-import React from "react";
-import {Navigate} from "react-router-dom";
-
-const Index = () => (
-    <Navigate to="/availability"/>
-);
+const Index = () => {
+  window.location.replace("/availability");
+};
 
 export default Index;
