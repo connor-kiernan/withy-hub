@@ -1,10 +1,7 @@
 import React from "react";
 import LoadingScreen from "../LoadingScreen";
-import {matchesApiSlice, useGetMatchesQuery} from "../../features/matches/matchSlice";
+import {useGetMatchesQuery} from "../../features/matches/matchSlice";
 import {Outlet} from "react-router-dom";
-import {store} from "../../app/store";
-
-store.dispatch(matchesApiSlice.endpoints.getMatches.initiate());
 
 const AvailabilityContainer = () => {
   const {
