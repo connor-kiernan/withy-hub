@@ -14,7 +14,6 @@ import Index from "./views/Index";
 const App = () => {
   return (
       <Routes>
-        <Route path="/">
           <Route element={<PersistLogin/>}>
             <Route element={<RequireAuth/>}>
               <Route element={<StripSearch/>}>
@@ -31,7 +30,6 @@ const App = () => {
               </Route>
             </Route>
           </Route>
-        </Route>
       </Routes>
   );
 };
