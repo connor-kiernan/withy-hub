@@ -7,7 +7,7 @@ const Profile = () => {
   const sendLogout = async () => {
     await logout();
 
-    window.location.href = `${process.env.REACT_APP_COGNITO_URL}/logout?client_id=56aos06b5upnvkhho12k6lcfa6&logout_uri=${encodeURIComponent(process.env.REACT_APP_HOSTED_URL)}/availability`;
+    window.location.href = `${process.env.REACT_APP_COGNITO_URL}/logout?client_id=56aos06b5upnvkhho12k6lcfa6&logout_uri=${encodeURIComponent(process.env.REACT_APP_HOSTED_URL + "/availability")}`;
   }
 
   return (
