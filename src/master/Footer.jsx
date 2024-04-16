@@ -8,6 +8,9 @@ const Footer = () => (
             <LinkContainer to="/availability">
               <Nav.Link><i className="fa-regular fa-calendar-check"></i></Nav.Link>
             </LinkContainer>
+            <LinkContainer to="/events">
+              <Nav.Link><i className="fa-solid fa-clipboard-list"></i></Nav.Link>
+            </LinkContainer>
             <LinkContainer to="/profile">
               <Nav.Link><i className="fa-regular fa-user"></i></Nav.Link>
             </LinkContainer>

@@ -10,6 +10,7 @@ import StripSearch from "./components/StripSearch";
 import MatchAvailability from "./components/availability/MatchAvailability";
 import AvailabilityContainer from "./components/availability/AvailabilityContainer";
 import Index from "./views/Index";
+import Events from "./views/Events";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
                     <Route index element={<Availability/>} />
                     <Route path=":fixtureId" element={<MatchAvailability />} />
                   </Route>
+                  <Route path="events" element={<Events />} />
                   <Route path="profile" element={<Profile/>}/>
                   <Route path="*" element={<NotFound/>}/>
                 </Route>
