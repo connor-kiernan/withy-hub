@@ -29,6 +29,14 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
           body: {...availabilityUpdateRequest}
         }),
         invalidatesTags: (result, error, arg) => [{type: "Match", id: arg.id}]
+      }),
+      addEvent: builder.mutation({
+        query: addEventRequest => ({
+          url: "/addEvent",
+          method: "POST",
+          body: {...addEventRequest}
+        }),
+        invalidatesTags: [{type: "Match", id: "LIST"}]
       })
     };
   }
@@ -37,6 +45,7 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetMatchesQuery,
   useUpdateAvailabilityMutation,
+  useAddEventMutation
 } = matchesApiSlice;
 
 export const selectMatchesResult = matchesApiSlice.endpoints.getMatches.select();

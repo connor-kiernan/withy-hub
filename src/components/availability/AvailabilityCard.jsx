@@ -34,7 +34,7 @@ const AvailabilityCard = ({event, availability}) => {
 
   const {text, variant} = normaliseAvailability(availability);
 
-  const addressLine = <>{eventType ? eventType.toLowerCase() : isHomeGame ? "Home" : "Away"} &#183; <span className="user-select-all">{address["line1"]}</span></>;
+  const addressLine = <>{eventType !== "GAME" ? eventType.toLowerCase() : isHomeGame ? "Home" : "Away"} &#183; <span className="user-select-all">{address["line1"]}</span></>;
 
   return (
       <Card className="text-center">

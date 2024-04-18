@@ -10,6 +10,8 @@ import StripSearch from "./components/StripSearch";
 import MatchAvailability from "./components/availability/MatchAvailability";
 import AvailabilityContainer from "./components/availability/AvailabilityContainer";
 import Index from "./views/Index";
+import Events from "./views/Events";
+import RequireRoles from "./features/auth/RequireRoles";
 
 const App = () => {
   return (
@@ -26,6 +28,9 @@ const App = () => {
                   </Route>
                   <Route path="profile" element={<Profile/>}/>
                   <Route path="*" element={<NotFound/>}/>
+                  <Route element={<RequireRoles allowedRoles={["Admin"]} />} >
+                    <Route path="events" element={<Events />} />
+                  </Route>
                 </Route>
               </Route>
             </Route>
