@@ -92,6 +92,12 @@ export const selectEventById = (eventId) => createSelector(
 
 export const selectAvailabilityByUserSub = (userSub) => createSelector(
     selectFutureEvents,
-    event => event.map(({id, kickOffDateTime, address, isHomeGame, isHomeKit, opponent, eventType, playerAvailability}) =>
+    events => events.map(({id, kickOffDateTime, address, isHomeGame, isHomeKit, opponent, eventType, playerAvailability}) =>
         ({event: {id, kickOffDateTime, address, isHomeGame, opponent, isHomeKit, eventType}, availability: playerAvailability ? playerAvailability[userSub] : null}))
 )
+
+export const selectEventExists = (newKickOffDateTime) => createSelector(
+    selectFutureEvents,
+    events => events.some(({kickOffDateTime}) =>
+        kickOffDateTime.slice(0, 16) === newKickOffDateTime)
+);

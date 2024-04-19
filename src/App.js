@@ -8,35 +8,38 @@ import RequireAuth from "./features/auth/RequireAuth";
 import PersistLogin from "./components/PersistLogin";
 import StripSearch from "./components/StripSearch";
 import MatchAvailability from "./components/availability/MatchAvailability";
-import AvailabilityContainer from "./components/availability/AvailabilityContainer";
 import Index from "./views/Index";
 import Events from "./views/Events";
 import RequireRoles from "./features/auth/RequireRoles";
+import PreFetchEvents from "./components/PreFetchEvents";
 
 const App = () => {
   return (
       <Routes>
-          <Route element={<PersistLogin/>}>
-            <Route element={<RequireAuth/>}>
-              <Route element={<StripSearch/>}>
-                <Route element={<Layout/>}>
-                  <Route index element={<Index />}/>
-                  <Route path="/" element={<Index />}/>
-                  <Route path="availability" element={<AvailabilityContainer />}>
-                    <Route index element={<Availability/>} />
-                    <Route path=":fixtureId" element={<MatchAvailability />} />
+        <Route element={<PersistLogin/>}>
+          <Route element={<RequireAuth/>}>
+            <Route element={<StripSearch/>}>
+              <Route element={<Layout/>}>
+                <Route element={<PreFetchEvents/>}>
+                  <Route index element={<Index/>}/>
+                  <Route path="/" element={<Index/>}/>
+                  <Route path="availability">
+                    <Route index element={<Availability/>}/>
+                    <Route path=":fixtureId" element={<MatchAvailability/>}/>
                   </Route>
                   <Route path="profile" element={<Profile/>}/>
                   <Route path="*" element={<NotFound/>}/>
-                  <Route element={<RequireRoles allowedRoles={["Admin"]} />} >
-                    <Route path="events" element={<Events />} />
+                  <Route element={<RequireRoles allowedRoles={["Admin"]}/>}>
+                    <Route path="events" element={<Events/>}/>
                   </Route>
                 </Route>
               </Route>
             </Route>
           </Route>
+        </Route>
       </Routes>
-  );
+  )
+      ;
 };
 
 export default App;
