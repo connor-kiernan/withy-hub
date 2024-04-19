@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, CloseButton, Col, Form, Row, Spinner, Toast} from "react-bootstrap";
-import {useAddEventMutation} from "../../features/matches/matchSlice";
+import {selectEventExists, useAddEventMutation} from "../../features/matches/matchSlice";
+import {useSelector} from "react-redux";
 
 const AddMatchForm = () => {
   const date = new Date().toISOString().split("T")[0] + "T10:15";
@@ -20,6 +21,8 @@ const AddMatchForm = () => {
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [customError, setCustomError] = useState("");
+  const eventExists = useSelector(selectEventExists(kickOffDateTime));
 
   const populateHomeAddress = () => {
     setAddress1("Hough End Playing Fields");
@@ -44,17 +47,22 @@ const AddMatchForm = () => {
     if (form.checkValidity() !== false) {
       setValidated(false);
 
-      await addEvent({
-        opponent,
-        kickOffDateTime,
-        isHomeGame,
-        isHomeKit,
-        address1,
-        address2,
-        postcode,
-        pitchType,
-        eventType: "GAME"
-      });
+      if (eventExists) {
+        setCustomError("Match already exists at that time");
+        setShowError(true);
+      } else {
+        await addEvent({
+          opponent,
+          kickOffDateTime,
+          isHomeGame,
+          isHomeKit,
+          address1,
+          address2,
+          postcode,
+          pitchType,
+          eventType: "GAME"
+        });
+      }
     } else {
       setValidated(true);
     }
@@ -164,7 +172,7 @@ const AddMatchForm = () => {
         <Toast onClose={() => setShowError(false)} show={showError} delay={6000} autohide
                className="position-fixed bottom-0 start-50 translate-middle-x mb-6">
           <div className="d-flex">
-            <Toast.Body>Error adding match: {error?.data?.title}, please try again</Toast.Body>
+            <Toast.Body>Error adding match: {error?.data?.title ?? customError}, please try again</Toast.Body>
             <CloseButton className="me-2 m-auto" data-bs-dismiss="toast" aria-label="close"/>
           </div>
         </Toast>
