@@ -4,12 +4,19 @@ import {selectEventExists, useAddEventMutation} from "../../features/matches/mat
 import {useSelector} from "react-redux";
 
 const AddMatchForm = () => {
-  const date = new Date().toISOString().split("T")[0] + "T10:15";
+  const getDefaultTrainingDate = (kickOffDateTime) => {
+    const date = new Date(kickOffDateTime);
+    date.setDate(date.getDate() - (3 - (7 - date.getDay())) % 7);
+
+    return date.toISOString().split("T")[0] + "T20:00"
+  }
+
+  const formattedDate = new Date().toISOString().split("T")[0] + "T10:15";
   const [validated, setValidated] = useState(false);
   const [disabled, setDisabled] = useState(false);
 
   const [opponent, setOpponent] = useState("");
-  const [kickOffDateTime, setKickOffDateTime] = useState(date);
+  const [kickOffDateTime, setKickOffDateTime] = useState(formattedDate);
   const [isHomeGame, setIsHomeGame] = useState(true);
   const [isHomeKit, setIsHomeKit] = useState(true);
   const [address1, setAddress1] = useState("");
@@ -17,12 +24,17 @@ const AddMatchForm = () => {
   const [postcode, setPostcode] = useState("");
   const [pitchType, setPitchType] = useState("Grass");
 
+  const [trainingKickOffDateTime, setTrainingKickOffDateTime] = useState(getDefaultTrainingDate(kickOffDateTime));
+
   const [addEvent, {isLoading, isSuccess, isError, error}] = useAddEventMutation();
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const [customError, setCustomError] = useState("");
   const eventExists = useSelector(selectEventExists(kickOffDateTime));
+  const trainingEventExists = useSelector(selectEventExists(trainingKickOffDateTime));
+
+  const [addTrainingSession, setAddTrainingSession] = useState(false);
 
   const populateHomeAddress = () => {
     setAddress1("Hough End Playing Fields");
@@ -50,6 +62,9 @@ const AddMatchForm = () => {
       if (eventExists) {
         setCustomError("Match already exists at that time");
         setShowError(true);
+      } else if (addTrainingSession && trainingEventExists) {
+        setCustomError("Training already exists at that time");
+        setShowError(true);
       } else {
         await addEvent({
           opponent,
@@ -62,6 +77,19 @@ const AddMatchForm = () => {
           pitchType,
           eventType: "GAME"
         });
+
+
+        if (addTrainingSession) {
+          await addEvent({
+            opponent: "Training",
+            kickOffDateTime: trainingKickOffDateTime,
+            address1: "The Armitage Sports Centre",
+            address2: "Moseley Rd",
+            postcode: "M14 6PA",
+            pitchType: "Astro Turf",
+            eventType: "TRAINING"
+          })
+        }
       }
     } else {
       setValidated(true);
@@ -96,8 +124,11 @@ const AddMatchForm = () => {
                 </Form.Group>
                 <Form.Group controlId="dateTime">
                   <Form.Label>Kick Off</Form.Label>
-                  <Form.Control defaultValue={date} type="datetime-local" min={date} required
-                                onChange={e => setKickOffDateTime(e.target.value)}/>
+                  <Form.Control defaultValue={formattedDate} type="datetime-local" min={formattedDate} required
+                                onChange={e => {
+                                  setKickOffDateTime(e.target.value);
+                                  setTrainingKickOffDateTime(getDefaultTrainingDate(e.target.value))
+                                }}/>
                 </Form.Group>
                 <Row className="mt-4">
                   <Col xs={6}>
@@ -150,6 +181,20 @@ const AddMatchForm = () => {
                     </Form.Select>
                   </Form.Group>
                 </fieldset>
+
+                <Form.Group>
+                 <Form.Check className="noValidate" label="Add Training Session?" type="checkbox" onChange={() => setAddTrainingSession(!addTrainingSession)}/>
+                </Form.Group>
+
+                {addTrainingSession &&
+                    <fieldset>
+                      <Form.Group controlId="trainingDateTime">
+                        <Form.Label>Session Date</Form.Label>
+                        <Form.Control value={trainingKickOffDateTime} type="datetime-local" min={formattedDate} required
+                                      onChange={e => setTrainingKickOffDateTime(e.target.value)}/>
+                      </Form.Group>
+                    </fieldset>
+                }
 
                 <Form.Group className="text-center">
                   <Button type="submit">{isLoading ? (
