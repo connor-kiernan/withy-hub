@@ -50,3 +50,7 @@
   box-shadow: none;
   background-image: none;
 }
+
+.dropdown-item:active {
+  background-color: var(--bs-primary);
+}
