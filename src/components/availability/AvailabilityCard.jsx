@@ -34,7 +34,19 @@ const AvailabilityCard = ({event, availability}) => {
 
   const {text, variant} = normaliseAvailability(availability);
 
-  const addressLine = <>{eventType !== "GAME" ? eventType.toLowerCase() : isHomeGame ? "Home" : "Away"} &#183; <span className="user-select-all">{address["line1"]}</span></>;
+  const determineCategory = (eventType) => {
+    switch(eventType) {
+    case "GAME":
+      return isHomeGame ? <span>Home &#183;</span> : <span>Away &#183;</span>;
+    case "TRAINING":
+      return (<span>Training &#183;</span>)
+      default:
+        return ""
+    }
+  }
+
+  const category = determineCategory(eventType);
+  const addressLine = <>{category} <span className="user-select-all">{address["line1"]}</span></>;
 
   return (
       <Card className="text-center">
