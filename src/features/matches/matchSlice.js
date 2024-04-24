@@ -37,6 +37,21 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
           body: {...addEventRequest}
         }),
         invalidatesTags: [{type: "Match", id: "LIST"}]
+      }),
+      editEvent: builder.mutation({
+        query: editEventRequest => ({
+          url: "/editEvent",
+          method: "PATCH",
+          body: {...editEventRequest}
+        }),
+        invalidatesTags: (result, error, arg) => [{type: "Match", id: arg.id}]
+      }),
+      deleteEvent: builder.mutation({
+        query: (eventId) => ({
+          url: `/deleteEvent/${eventId}`,
+          method: "DELETE"
+        }),
+        invalidatesTags: [{type: "Match", id: "LIST"}]
       })
     };
   }
@@ -45,7 +60,9 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetMatchesQuery,
   useUpdateAvailabilityMutation,
-  useAddEventMutation
+  useAddEventMutation,
+  useEditEventMutation,
+  useDeleteEventMutation
 } = matchesApiSlice;
 
 export const selectMatchesResult = matchesApiSlice.endpoints.getMatches.select();
@@ -61,17 +78,10 @@ export const {
   selectAll: selectAllEvents
 } = matchesAdapter.getSelectors(state => selectEventsData(state) ?? initialState);
 
-export const selectResults = createSelector(
-    selectAllEvents,
-    matches => {
-      return matches.filter(match => match["played"] ?? match["kickOffDateTime"] > new Date() / 1000);
-    }
-);
-
 export const selectFutureEvents = createSelector(
     selectAllEvents,
     matches => {
-      return matches.filter(match => !match["played"]);
+      return matches.filter(match => new Date(match["kickOffDateTime"]) > new Date());
     }
 );
 
@@ -80,13 +90,8 @@ export const selectNextEvent = createSelector(
     events => events[0]
 );
 
-export const selectLastResult = createSelector(
-    selectResults,
-    results => results[results.length - 1]
-);
-
 export const selectEventById = (eventId) => createSelector(
-    selectFutureEvents,
+    selectAllEvents,
     events => events.find(event => event.id === eventId)
 )
 

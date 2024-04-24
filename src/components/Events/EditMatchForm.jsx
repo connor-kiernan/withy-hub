@@ -1,40 +1,35 @@
 import React, {useEffect, useState} from "react";
+import {useEditEventMutation} from "../../features/matches/matchSlice";
 import {Button, CloseButton, Col, Form, Row, Spinner, Toast} from "react-bootstrap";
-import {selectEventExists, useAddEventMutation} from "../../features/matches/matchSlice";
-import {useSelector} from "react-redux";
 
-const AddMatchForm = () => {
-  const getDefaultTrainingDate = (kickOffDateTime) => {
-    const date = new Date(kickOffDateTime);
-    date.setDate(date.getDate() - (date.getDay() + 3) % 7);
-
-    return date.toISOString().split("T")[0] + "T20:00"
-  }
-
-  const formattedDate = new Date().toISOString().split("T")[0] + "T10:15";
+const EditMatchForm = ({match}) => {
   const [validated, setValidated] = useState(false);
   const [disabled, setDisabled] = useState(false);
 
-  const [opponent, setOpponent] = useState("");
-  const [kickOffDateTime, setKickOffDateTime] = useState(formattedDate);
-  const [isHomeGame, setIsHomeGame] = useState(true);
-  const [isHomeKit, setIsHomeKit] = useState(true);
-  const [address1, setAddress1] = useState("");
-  const [address2, setAddress2] = useState("");
-  const [postcode, setPostcode] = useState("");
-  const [pitchType, setPitchType] = useState("Grass");
+  const dateObj = new Date(match.kickOffDateTime);
+  const dateIso = dateObj.toISOString().split("T")[0] + "T" + dateObj.toLocaleTimeString();
+  const date = dateIso.substring(0, dateIso.lastIndexOf(":"));
 
-  const [trainingKickOffDateTime, setTrainingKickOffDateTime] = useState(getDefaultTrainingDate(kickOffDateTime));
+  const [opponent, setOpponent] = useState(match.opponent);
+  const [kickOffDateTime, setKickOffDateTime] = useState(date);
+  const [isHomeGame, setIsHomeGame] = useState(match.isHomeGame);
+  const [isHomeKit, setIsHomeKit] = useState(match.isHomeKit);
+  const [address1, setAddress1] = useState(match.address.line1);
+  const [address2, setAddress2] = useState(match.address.line2 ?? "");
+  const [postcode, setPostcode] = useState(match.address.postcode);
+  const [pitchType, setPitchType] = useState(match.pitchType);
 
-  const [addEvent, {isLoading, isSuccess, isError, error}] = useAddEventMutation();
+  const [editEvent, {isLoading, isSuccess, isError, error}] = useEditEventMutation();
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [customError, setCustomError] = useState("");
-  const eventExists = useSelector(selectEventExists(kickOffDateTime));
-  const trainingEventExists = useSelector(selectEventExists(trainingKickOffDateTime));
 
-  const [addTrainingSession, setAddTrainingSession] = useState(false);
+  const clearAddress = () => {
+    setAddress1("");
+    setAddress2("");
+    setPostcode("");
+    setPitchType("");
+  };
 
   const populateHomeAddress = () => {
     setAddress1("Hough End Playing Fields");
@@ -43,65 +38,35 @@ const AddMatchForm = () => {
     setPitchType("Grass");
   }
 
-  const clearAddress = () => {
-    setAddress1("");
-    setAddress2("");
-    setPostcode("");
-    setPitchType("");
-  }
-
   const submitForm = async (e) => {
     setDisabled(true);
     e.preventDefault();
     e.stopPropagation();
     const form = e.currentTarget;
 
-    if (form.checkValidity() !== false) {
+    if (form.checkValidity()!== false) {
       setValidated(false);
-
-      if (eventExists) {
-        setCustomError("Match already exists at that time");
-        setShowError(true);
-      } else if (addTrainingSession && trainingEventExists) {
-        setCustomError("Training already exists at that time");
-        setShowError(true);
-      } else {
-        await addEvent({
-          opponent,
-          kickOffDateTime,
-          isHomeGame,
-          isHomeKit,
-          address1,
-          address2,
-          postcode,
-          pitchType,
-          eventType: "GAME"
-        });
-
-
-        if (addTrainingSession) {
-          await addEvent({
-            opponent: "Training",
-            kickOffDateTime: trainingKickOffDateTime,
-            address1: "The Armitage Sports Centre",
-            address2: "Moseley Rd",
-            postcode: "M14 6PA",
-            pitchType: "Astro Turf",
-            eventType: "TRAINING"
-          })
-        }
-      }
+      await editEvent({
+        id: match.id,
+        opponent,
+        kickOffDateTime,
+        isHomeGame,
+        isHomeKit,
+        address1,
+        address2,
+        postcode,
+        pitchType
+      });
     } else {
       setValidated(true);
     }
-
     setDisabled(false);
   };
 
   useEffect(() => {
     if (isSuccess) {
       setShowSuccess(true);
-      document.getElementById("addMatchForm").reset();
+      document.getElementById("editMatchForm").reset();
     }
     // eslint-disable-next-line
   }, [isSuccess]);
@@ -114,46 +79,43 @@ const AddMatchForm = () => {
 
   return (
       <>
-        <Form noValidate onSubmit={submitForm} validated={validated} id="addMatchForm">
+        <Form noValidate onSubmit={submitForm} validated={validated} id="editMatchForm">
+          <legend>Edit Match</legend>
           <Row className="mb-4">
             <fieldset disabled={disabled}>
               <Row className="gy-4">
                 <Form.Group controlId="opponent">
                   <Form.Label>Opponent</Form.Label>
-                  <Form.Control defaultValue="" type="text" required onChange={e => setOpponent(e.target.value)}/>
+                  <Form.Control defaultValue={opponent} type="text" required onChange={e => setOpponent(e.target.value)}/>
                 </Form.Group>
                 <Form.Group controlId="dateTime">
                   <Form.Label>Kick Off</Form.Label>
-                  <Form.Control defaultValue={formattedDate} type="datetime-local" min={formattedDate} required
-                                onChange={e => {
-                                  setKickOffDateTime(e.target.value);
-                                  setTrainingKickOffDateTime(getDefaultTrainingDate(e.target.value))
-                                }}/>
+                  <Form.Control defaultValue={kickOffDateTime} type="datetime-local" required onChange={e => setKickOffDateTime(e.target.value)}/>
                 </Form.Group>
                 <Row className="mt-4">
                   <Col xs={6}>
                     <Form.Group controlId="homeGame">
-                      <Form.Check className="noValidate" label="Home game" name="homeGame" type="radio" required
+                      <Form.Check defaultChecked={isHomeGame} className="noValidate" label="Home game" name="homeGame" type="radio" required
                                   onChange={() => {
                                     setIsHomeGame(true);
                                     populateHomeAddress();
                                   }}/>
                     </Form.Group>
                     <Form.Group controlId="awayGame">
-                      <Form.Check className="noValidate" label="Away game" name="homeGame" type="radio" required
+                      <Form.Check defaultChecked={!isHomeGame} className="noValidate" label="Away game" name="homeGame" type="radio" required
                                   onChange={() => {
                                     setIsHomeGame(false);
-                                    clearAddress()
+                                    clearAddress();
                                   }}/>
                     </Form.Group>
                   </Col>
                   <Col xs={6}>
                     <Form.Group controlId="homekit">
-                      <Form.Check className="noValidate" label="Home kit" name="kit" type="radio" required
+                      <Form.Check defaultChecked={isHomeKit} className="noValidate" label="Home kit" name="kit" type="radio" required
                                   onChange={() => setIsHomeKit(true)}/>
                     </Form.Group>
                     <Form.Group className="awayKit">
-                      <Form.Check className="noValidate" label="Away kit" name="kit" type="radio" required
+                      <Form.Check defaultChecked={!isHomeKit} className="noValidate" label="Away kit" name="kit" type="radio" required
                                   onChange={() => setIsHomeKit(false)}/>
                     </Form.Group>
                   </Col>
@@ -166,7 +128,8 @@ const AddMatchForm = () => {
                   </Form.Group>
                   <Form.Group className="mb-2" controlId="address2">
                     <Form.Label>Address Line 2 (Optional)</Form.Label>
-                    <Form.Control value={address2} className="noValidate" type="text" onChange={e => setAddress2(e.target.value)}/>
+                    <Form.Control value={address2} className="noValidate" type="text"
+                                  onChange={e => setAddress2(e.target.value)}/>
                   </Form.Group>
                   <Form.Group className="mb-2" controlId="postcode">
                     <Form.Label>Postcode</Form.Label>
@@ -182,26 +145,12 @@ const AddMatchForm = () => {
                   </Form.Group>
                 </fieldset>
 
-                <Form.Group>
-                 <Form.Check className="noValidate" label="Add Training Session?" type="checkbox" onChange={() => setAddTrainingSession(!addTrainingSession)}/>
-                </Form.Group>
-
-                {addTrainingSession &&
-                    <fieldset>
-                      <Form.Group controlId="trainingDateTime">
-                        <Form.Label>Session Date</Form.Label>
-                        <Form.Control value={trainingKickOffDateTime} type="datetime-local" min={formattedDate} required
-                                      onChange={e => setTrainingKickOffDateTime(e.target.value)}/>
-                      </Form.Group>
-                    </fieldset>
-                }
-
                 <Form.Group className="text-center">
                   <Button type="submit">{isLoading ? (
                           <Spinner as="span" animation="border" role="status" variant="secondary">
                             <span className="visually-hidden">Loading...</span>
                           </Spinner>)
-                      : "Add Match"}</Button>
+                      : "Save Changes"}</Button>
                 </Form.Group>
               </Row>
             </fieldset>
@@ -210,14 +159,14 @@ const AddMatchForm = () => {
         <Toast onClose={() => setShowSuccess(false)} show={showSuccess} delay={3000} autohide
                className="position-fixed bottom-0 start-50 translate-middle-x mb-6">
           <div className="d-flex">
-            <Toast.Body>Match added successfully</Toast.Body>
+            <Toast.Body>Match updated successfully</Toast.Body>
             <CloseButton className="me-2 m-auto" data-bs-dismiss="toast" aria-label="close"/>
           </div>
         </Toast>
         <Toast onClose={() => setShowError(false)} show={showError} delay={6000} autohide
                className="position-fixed bottom-0 start-50 translate-middle-x mb-6">
           <div className="d-flex">
-            <Toast.Body>Error adding match: {error?.data?.title ?? customError}, please try again</Toast.Body>
+            <Toast.Body>Error updating match: {error?.data?.title}, please try again</Toast.Body>
             <CloseButton className="me-2 m-auto" data-bs-dismiss="toast" aria-label="close"/>
           </div>
         </Toast>
@@ -225,4 +174,4 @@ const AddMatchForm = () => {
   );
 };
 
-export default AddMatchForm;
+export default EditMatchForm;

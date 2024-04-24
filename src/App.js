@@ -1,5 +1,5 @@
 import "./App.css";
-import {Route, Routes} from "react-router-dom";
+import {Navigate, Route, Routes} from "react-router-dom";
 import Availability from "./views/Availability";
 import NotFound from "./views/NotFound";
 import Profile from "./views/Profile";
@@ -12,6 +12,9 @@ import Index from "./views/Index";
 import Events from "./views/Events";
 import RequireRoles from "./features/auth/RequireRoles";
 import PreFetchEvents from "./components/PreFetchEvents";
+import EditEventForm from "./components/Events/EditEventForm";
+import AddEvent from "./components/Events/AddEvent";
+import ManageEvents from "./components/Events/ManageEvents";
 
 const App = () => {
   return (
@@ -30,7 +33,14 @@ const App = () => {
                   <Route path="profile" element={<Profile/>}/>
                   <Route path="*" element={<NotFound/>}/>
                   <Route element={<RequireRoles allowedRoles={["Admin"]}/>}>
-                    <Route path="events" element={<Events/>}/>
+                    <Route path="events" element={<Events />}>
+                      <Route index element={<Navigate to="add" />}/>
+                      <Route path="add" element={<AddEvent />}/>
+                      <Route path="manage">
+                        <Route index element={<ManageEvents />} />
+                        <Route path=":eventId" element={<EditEventForm />} />
+                      </Route>
+                    </Route>
                   </Route>
                 </Route>
               </Route>
