@@ -31,6 +31,7 @@ const EditTrainingForm = ({training}) => {
       setValidated(false);
       await editEvent({
         id: training.id,
+        opponent: "Training",
         kickOffDateTime,
         address1,
         address2,

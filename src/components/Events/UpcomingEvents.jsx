@@ -6,6 +6,7 @@ import {Link} from "react-router-dom";
 
 const UpcomingEvents = () => {
   const events = useSelector(selectFutureEvents);
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const eventForDeletion = useSelector(selectEventById(deleteId));
@@ -57,6 +58,10 @@ const UpcomingEvents = () => {
   };
 
   const handleClose = () => setShowDeleteModal(false);
+
+  if (events.length === 0) {
+    return <p className="text-center mt-5">No Events to Show</p>
+  }
 
   return (
       <>
