@@ -52,6 +52,14 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
           method: "DELETE"
         }),
         invalidatesTags: [{type: "Match", id: "LIST"}]
+      }),
+      completeMatch: builder.mutation({
+        query: completeMatchRequest => ({
+          url: "/completeMatch",
+          method: "PATCH",
+          body: {...completeMatchRequest}
+        }),
+        invalidatesTags: (result, error, arg) => [{type: "Match", id: arg.id}]
       })
     };
   }
@@ -62,7 +70,8 @@ export const {
   useUpdateAvailabilityMutation,
   useAddEventMutation,
   useEditEventMutation,
-  useDeleteEventMutation
+  useDeleteEventMutation,
+  useCompleteMatchMutation
 } = matchesApiSlice;
 
 export const selectMatchesResult = matchesApiSlice.endpoints.getMatches.select();
@@ -85,21 +94,27 @@ export const selectFutureEvents = createSelector(
     }
 );
 
-export const selectNextEvent = createSelector(
-    selectFutureEvents,
-    events => events[0]
+export const selectIncompleteMatches = createSelector(
+    selectAllEvents,
+    events => {
+      return events.filter(event => event.eventType === "GAME")
+      .filter(event => event?.played === false && new Date() > new Date(event.kickOffDateTime));
+    }
 );
 
 export const selectEventById = (eventId) => createSelector(
     selectAllEvents,
     events => events.find(event => event.id === eventId)
-)
+);
 
 export const selectAvailabilityByUserSub = (userSub) => createSelector(
     selectFutureEvents,
     events => events.map(({id, kickOffDateTime, address, isHomeGame, isHomeKit, opponent, eventType, playerAvailability}) =>
-        ({event: {id, kickOffDateTime, address, isHomeGame, opponent, isHomeKit, eventType}, availability: playerAvailability ? playerAvailability[userSub] : null}))
-)
+        ({
+          event: {id, kickOffDateTime, address, isHomeGame, opponent, isHomeKit, eventType},
+          availability: playerAvailability ? playerAvailability[userSub] : null
+        }))
+);
 
 export const selectEventExists = (newKickOffDateTime) => createSelector(
     selectFutureEvents,

@@ -15,6 +15,9 @@ import PreFetchEvents from "./components/PreFetchEvents";
 import EditEventForm from "./components/Events/EditEventForm";
 import AddEvent from "./components/Events/AddEvent";
 import ManageEvents from "./components/Events/ManageEvents";
+import UpcomingEvents from "./components/Events/UpcomingEvents";
+import PreviousEvents from "./components/Events/PreviousEvents";
+import CompleteMatchForm from "./components/Events/CompleteMatchForm";
 
 const App = () => {
   return (
@@ -33,12 +36,25 @@ const App = () => {
                   <Route path="profile" element={<Profile/>}/>
                   <Route path="*" element={<NotFound/>}/>
                   <Route element={<RequireRoles allowedRoles={["Admin"]}/>}>
-                    <Route path="events" element={<Events />}>
-                      <Route index element={<Navigate to="add" />}/>
-                      <Route path="add" element={<AddEvent />}/>
+                    <Route path="events" element={<Events/>}>
+                      <Route index element={<Navigate to="add"/>}/>
+                      <Route path="add" element={<AddEvent/>}/>
                       <Route path="manage">
-                        <Route index element={<ManageEvents />} />
-                        <Route path=":eventId" element={<EditEventForm />} />
+                        <Route element={<ManageEvents/>}>
+                          <Route index element={<Navigate to="upcoming"/>}/>
+                          <Route path="upcoming">
+                            <Route index element={<UpcomingEvents/>}/>
+                          </Route>
+                          <Route path="previous">
+                            <Route index element={<PreviousEvents/>}/>
+                          </Route>
+                        </Route>
+                        <Route path="upcoming">
+                          <Route path=":eventId" element={<EditEventForm/>}/>
+                        </Route>
+                        <Route path="previous">
+                          <Route path=":matchId" element={<CompleteMatchForm/>}/>
+                        </Route>
                       </Route>
                     </Route>
                   </Route>
