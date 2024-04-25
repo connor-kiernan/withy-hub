@@ -12,6 +12,10 @@ const PreviousEvents = () => {
     return localeString.substring(0, localeString.lastIndexOf(":"));
   };
 
+  if (incompleteMatches.length === 0) {
+    return <p className="text-center mt-5">No incomplete games to Show</p>
+  }
+
   return (
       <>
         <Table bordered responsive className="border-secondary">
