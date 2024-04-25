@@ -26,7 +26,7 @@ const AvailabilityForm = ({playerAvailability, matchId, isGame}) => {
   const [submitDisabled, setSubmitDisabled] = useState(true);
 
   useEffect(() => {
-    if (status !== confirmedAvailability.current || comment.trim() !== confirmedComment.current) {
+    if (status !== confirmedAvailability.current || comment.trim() !== (confirmedComment.current ?? "")) {
       setSubmitDisabled(false);
     } else {
       setSubmitDisabled(true);

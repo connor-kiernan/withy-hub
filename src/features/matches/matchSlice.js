@@ -29,6 +29,37 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
           body: {...availabilityUpdateRequest}
         }),
         invalidatesTags: (result, error, arg) => [{type: "Match", id: arg.id}]
+      }),
+      addEvent: builder.mutation({
+        query: addEventRequest => ({
+          url: "/addEvent",
+          method: "POST",
+          body: {...addEventRequest}
+        }),
+        invalidatesTags: [{type: "Match", id: "LIST"}]
+      }),
+      editEvent: builder.mutation({
+        query: editEventRequest => ({
+          url: "/editEvent",
+          method: "PATCH",
+          body: {...editEventRequest}
+        }),
+        invalidatesTags: (result, error, arg) => [{type: "Match", id: arg.id}]
+      }),
+      deleteEvent: builder.mutation({
+        query: (eventId) => ({
+          url: `/deleteEvent/${eventId}`,
+          method: "DELETE"
+        }),
+        invalidatesTags: [{type: "Match", id: "LIST"}]
+      }),
+      completeMatch: builder.mutation({
+        query: completeMatchRequest => ({
+          url: "/completeMatch",
+          method: "PATCH",
+          body: {...completeMatchRequest}
+        }),
+        invalidatesTags: (result, error, arg) => [{type: "Match", id: arg.id}]
       })
     };
   }
@@ -37,6 +68,10 @@ export const matchesApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetMatchesQuery,
   useUpdateAvailabilityMutation,
+  useAddEventMutation,
+  useEditEventMutation,
+  useDeleteEventMutation,
+  useCompleteMatchMutation
 } = matchesApiSlice;
 
 export const selectMatchesResult = matchesApiSlice.endpoints.getMatches.select();
@@ -52,37 +87,37 @@ export const {
   selectAll: selectAllEvents
 } = matchesAdapter.getSelectors(state => selectEventsData(state) ?? initialState);
 
-export const selectResults = createSelector(
-    selectAllEvents,
-    matches => {
-      return matches.filter(match => match["played"] ?? match["kickOffDateTime"] > new Date() / 1000);
-    }
-);
-
 export const selectFutureEvents = createSelector(
     selectAllEvents,
     matches => {
-      return matches.filter(match => !match["played"]);
+      return matches.filter(match => new Date(match["kickOffDateTime"]) > new Date());
     }
 );
 
-export const selectNextEvent = createSelector(
-    selectFutureEvents,
-    events => events[0]
-);
-
-export const selectLastResult = createSelector(
-    selectResults,
-    results => results[results.length - 1]
+export const selectIncompleteMatches = createSelector(
+    selectAllEvents,
+    events => {
+      return events.filter(event => event.eventType === "GAME")
+      .filter(event => event?.played === false && new Date() > new Date(event.kickOffDateTime));
+    }
 );
 
 export const selectEventById = (eventId) => createSelector(
-    selectFutureEvents,
+    selectAllEvents,
     events => events.find(event => event.id === eventId)
-)
+);
 
 export const selectAvailabilityByUserSub = (userSub) => createSelector(
     selectFutureEvents,
-    event => event.map(({id, kickOffDateTime, address, isHomeGame, isHomeKit, opponent, eventType, playerAvailability}) =>
-        ({event: {id, kickOffDateTime, address, isHomeGame, opponent, isHomeKit, eventType}, availability: playerAvailability ? playerAvailability[userSub] : null}))
-)
+    events => events.map(({id, kickOffDateTime, address, isHomeGame, isHomeKit, opponent, eventType, playerAvailability}) =>
+        ({
+          event: {id, kickOffDateTime, address, isHomeGame, opponent, isHomeKit, eventType},
+          availability: playerAvailability ? playerAvailability[userSub] : null
+        }))
+);
+
+export const selectEventExists = (newKickOffDateTime) => createSelector(
+    selectFutureEvents,
+    events => events.some(({kickOffDateTime}) =>
+        kickOffDateTime.slice(0, 16) === newKickOffDateTime)
+);

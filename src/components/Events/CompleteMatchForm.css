@@ -1,0 +1,3 @@
+.was-validated div:has(> input:invalid) + .invalid-feedback {
+  display: block;
+}

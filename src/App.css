@@ -26,3 +26,31 @@
   --bs-btn-disabled-bg: #1c62ad;
   --bs-btn-disabled-border-color: #1c62ad;
 }
+
+.nav-pills {
+  --bs-nav-pills-link-active-bg: var(--bs-primary)
+}
+
+.nav-pills .nav-link.active {
+  background-color: var(--bs-nav-pills-link-active-bg);
+}
+
+.form-check-input:checked, .was-validated .form-check-input:valid:checked {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.was-validated .form-check-input:valid {
+  border-color: #ced4da;
+}
+
+.form-control.noValidate:valid, .form-control.noValidate:valid:focus, .form-check-input:valid~.form-check-label{
+  border-color: #ced4da;
+  color: black!important;
+  box-shadow: none;
+  background-image: none;
+}
+
+.dropdown-item:active {
+  background-color: var(--bs-primary);
+}
