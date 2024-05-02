@@ -1,4 +1,4 @@
-name: Upload Website
+name: UAT - Upload Website
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
 
 env:
   REACT_APP_HAPI_URL: ${{ secrets.UAT_HAPI_URL }}
-  REACT_APP_ENVIRONMENT: "production"
+  REACT_APP_ENVIRONMENT: "uat"
   REACT_APP_COGNITO_CLIENT_ID: ${{ secrets.AWS_COGNITO_CLIENT_ID }}
   REACT_APP_COGNITO_URL: ${{ secrets.AWS_COGNITO_URL }}
   REACT_APP_HOSTED_URL: ${{ secrets.UAT_HOSTED_URL }}
