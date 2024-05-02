@@ -102,6 +102,7 @@ const AddMatchForm = () => {
     if (isSuccess) {
       setShowSuccess(true);
       document.getElementById("addMatchForm").reset();
+      setAddTrainingSession(false);
     }
     // eslint-disable-next-line
   }, [isSuccess]);
