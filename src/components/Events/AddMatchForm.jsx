@@ -47,7 +47,6 @@ const AddMatchForm = () => {
     setAddress1("");
     setAddress2("");
     setPostcode("");
-    setPitchType("");
   }
 
   const submitForm = async (e) => {
