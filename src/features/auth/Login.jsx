@@ -26,7 +26,6 @@ const Login = ({authCode, redirectUri}) => {
           console.error(err);
         }
       }
-
       exchangeCode();
     }
 
